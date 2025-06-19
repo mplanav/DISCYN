@@ -1,0 +1,1 @@
+from . import create_exercici, read_exercici

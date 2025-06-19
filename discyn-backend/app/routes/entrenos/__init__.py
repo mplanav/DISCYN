@@ -1,0 +1,1 @@
+from . import create_entreno, create_entreno_from_rutina, read_entreno, update_entreno_classic, update_entreno_rendiment, get_entreno
