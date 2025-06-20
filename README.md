@@ -32,15 +32,31 @@
 ```
 /discyn-backend
   ├── app/
-  ├── models/
-  ├── routes/
-  └── main.py
+  │   ├── core/
+  │   ├── database/
+  │   ├── models/
+  │   ├── routes/
+  │   └── schemas/
+  ├── static/
+  │   └── images/
+  │       ├── exercicis/
+  │       ├── grupmuscular/
+  │       └── persona/
+  ├── venv/
+  ├── docker-compose.yml  # (no se usa actualmente)
+  ├── Dockerfile
+  └── requirements.txt
 
 /discyn-frontend
-  ├── components/
+  ├── app/
+  │   ├── auth/
+  │   ├── tabs/
+  │   └── tabsadmin/
   ├── screens/
-  ├── navigation/
-  └── App.js
+  ├── assets/
+  ├── components/
+  ├── node_modules/
+  └── scripts/
 ```
 
 ---
