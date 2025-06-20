@@ -6,17 +6,16 @@ import {
   TextInput,
   TouchableOpacity,
   ActivityIndicator,
+  ScrollView,
 } from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import DropDownPicker from 'react-native-dropdown-picker'
 import config from '../config'
 import AlertModal from '../components/alertModel'
 
 const CreateRutina = () => {
   const [nom, setNom] = useState('')
-  const [selectedExercicis, setSelectedExercicis] = useState<string[]>([])
-  const [exercicisOptions, setExercicisOptions] = useState<{ label: string; value: string }[]>([])
-  const [dropdownOpen, setDropdownOpen] = useState(false)
+  const [exercicisDisponibles, setExercicisDisponibles] = useState<any[]>([])
+  const [exercicisSeleccionats, setExercicisSeleccionats] = useState<string[]>([])
   const [loading, setLoading] = useState(false)
 
   const [alertVisible, setAlertVisible] = useState(false)
@@ -44,25 +43,26 @@ const CreateRutina = () => {
             Authorization: `Bearer ${token}`,
           },
         })
-
         const data = await response.json()
-        if (!response.ok) throw new Error('Error cargando ejercicios')
-
-        const options = data.map((item: any) => ({
-          label: item.nom,
-          value: item.nom,
-        }))
-        setExercicisOptions(options)
+        if (!response.ok) throw new Error(data.detail || 'Error cargando ejercicios')
+        setExercicisDisponibles(data)
       } catch (error) {
-        showAlert('No se pudieron cargar los ejercicios', 'Error', 'error')
+        showAlert(error instanceof Error ? error.message : String(error), 'Error', 'error')
       }
     }
 
     fetchExercicis()
   }, [])
 
+  const toggleSeleccion = (nombre: string) => {
+    setExercicisSeleccionats(prev =>
+      prev.includes(nombre) ? prev.filter(e => e !== nombre) : [...prev, nombre]
+    )
+  }
+
   const handleSubmit = async () => {
-    if (!nom || selectedExercicis.length === 0) {
+    const trimmedNom = nom.trim()
+    if (!trimmedNom || exercicisSeleccionats.length === 0) {
       showAlert('Completa todos los campos.', 'Error', 'error')
       return
     }
@@ -73,8 +73,8 @@ const CreateRutina = () => {
       if (!token) throw new Error('No token found')
 
       const formData = new FormData()
-      formData.append('nom', nom)
-      formData.append('exercicis', selectedExercicis.join(','))
+      formData.append('nom', trimmedNom)
+      formData.append('exercicis', exercicisSeleccionats.join(','))
 
       const response = await fetch(`${config.API_BASE_URL}/rutines/create`, {
         method: 'POST',
@@ -90,7 +90,7 @@ const CreateRutina = () => {
 
       showAlert(data.message, 'Éxito', 'success')
       setNom('')
-      setSelectedExercicis([])
+      setExercicisSeleccionats([])
     } catch (error) {
       showAlert(error instanceof Error ? error.message : String(error), 'Error', 'error')
     } finally {
@@ -115,27 +115,32 @@ const CreateRutina = () => {
         />
       </View>
 
-      <View style={[styles.inputGroup, { zIndex: 10 }]}>
+      <View style={styles.inputGroup}>
         <Text style={styles.label}>Select Exercises</Text>
-        <DropDownPicker
-          open={dropdownOpen}
-          setOpen={setDropdownOpen}
-          items={exercicisOptions}
-          setItems={setExercicisOptions}
-          value={selectedExercicis}
-          setValue={setSelectedExercicis}
-          multiple={true}
-          placeholder="Select 1 or more"
-          listMode="SCROLLVIEW"
-          style={styles.dropdown}
-          dropDownContainerStyle={styles.dropdownContainer}
-          textStyle={styles.dropdownText}
-          placeholderStyle={styles.dropdownPlaceholder}
-          selectedItemLabelStyle={styles.dropdownSelectedItem}
-          badgeStyle={styles.dropdownBadge}
-          badgeTextStyle={styles.dropdownBadgeText}
-          disabled={loading}
-        />
+        <ScrollView style={styles.dropdownContainer}>
+          {exercicisDisponibles.map((ex: any, idx) => {
+            const selected = exercicisSeleccionats.includes(ex.nom)
+            return (
+              <TouchableOpacity
+                key={idx}
+                style={[styles.exerciseItem, selected && styles.exerciseSelected]}
+                onPress={() => toggleSeleccion(ex.nom)}
+                disabled={loading}
+              >
+                <Text style={styles.exerciseTitle}>{ex.nom}</Text>
+                {Array.isArray(ex.grups_musculars) && ex.grups_musculars.length > 0 && (
+                  <View style={styles.tagsContainer}>
+                    {ex.grups_musculars.map((grup: string, i: number) => (
+                      <View key={i} style={styles.tag}>
+                        <Text style={styles.tagText}>{grup}</Text>
+                      </View>
+                    ))}
+                  </View>
+                )}
+              </TouchableOpacity>
+            )
+          })}
+        </ScrollView>
       </View>
 
       <View style={{ marginTop: 30 }}>
@@ -195,6 +200,48 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#374151',
   },
+  dropdownContainer: {
+    maxHeight: 200,
+    backgroundColor: '#1F2937',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#374151',
+  },
+  exerciseItem: {
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderBottomColor: '#374151',
+    borderBottomWidth: 1,
+  },
+  exerciseSelected: {
+    backgroundColor: '#10B98122',
+  },
+  exerciseTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+    marginBottom: 6,
+  },
+  tagsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 6,
+  },
+  tag: {
+    backgroundColor: '#374151',
+    borderRadius: 16,
+    paddingHorizontal: 4,
+    paddingVertical: 6,
+    marginHorizontal: 2,
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  tagText: {
+    color: '#D1D5DB',
+    fontSize: 12,
+    textAlign: 'center',
+  },
   submitButton: {
     backgroundColor: '#10B981',
     paddingVertical: 16,
@@ -208,37 +255,6 @@ const styles = StyleSheet.create({
     color: '#111827',
     fontWeight: '700',
     fontSize: 18,
-  },
-  dropdown: {
-    backgroundColor: '#1E293B',
-    borderColor: '#334155',
-    borderRadius: 12,
-    paddingHorizontal: 8,
-    minHeight: 48,
-  },
-  dropdownContainer: {
-    backgroundColor: '#1E293B',
-    borderColor: '#334155',
-    borderRadius: 12,
-  },
-  dropdownText: {
-    color: '#F9FAFB',
-    fontSize: 16,
-  },
-  dropdownPlaceholder: {
-    color: '#9CA3AF',
-    fontSize: 16,
-  },
-  dropdownSelectedItem: {
-    fontWeight: 'bold',
-    color: '#10B981',
-  },
-  dropdownBadge: {
-    backgroundColor: '#10B981',
-  },
-  dropdownBadgeText: {
-    color: '#111827',
-    fontWeight: 'bold',
   },
 })
 
