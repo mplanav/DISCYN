@@ -149,7 +149,8 @@ const CreateExercici = () => {
         />
       </View>
 
-      <View style={styles.inputGroup}>
+      {/* Aquí incrementamos zIndex para que el dropdown quede encima */}
+      <View style={[styles.inputGroup, { zIndex: 1500 }]}>
         <Text style={styles.label}>Select Muscle Groups</Text>
         <DropDownPicker
           open={dropdownOpen}
@@ -159,10 +160,21 @@ const CreateExercici = () => {
           value={selectedGrups}
           setValue={setSelectedGrups}
           multiple={true}
-          placeholder="Select one or more groups"
+          placeholder="Select one or more groups..."
           listMode="SCROLLVIEW"
           style={styles.dropdown}
-          dropDownContainerStyle={styles.dropdownContainer}
+          dropDownContainerStyle={{
+            maxHeight: 500,
+            backgroundColor: '#1E293B',
+            borderColor: '#334155',
+            borderRadius: 12,
+            zIndex: 9999,
+            overflow: 'scroll',
+          }}
+          scrollViewProps={{
+            nestedScrollEnabled: true,
+            keyboardShouldPersistTaps: 'handled',
+          }}
           textStyle={styles.dropdownText}
           placeholderStyle={styles.dropdownPlaceholder}
           selectedItemLabelStyle={styles.dropdownSelectedItem}
@@ -289,7 +301,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     fontSize: 18,
   },
-    dropdown: {
+  dropdown: {
     backgroundColor: '#1E293B',
     borderColor: '#334155',
     borderRadius: 12,

@@ -1,0 +1,164 @@
+# ===== FRONTEND =====
+
+# dependencies
+/frontend/node_modules/
+
+# Expo
+/frontend/.expo/
+/frontend/dist/
+/frontend/web-build/
+/frontend/expo-env.d.ts
+
+# Native
+/frontend/.kotlin/
+/frontend/*.orig.*
+/frontend/*.jks
+/frontend/*.p8
+/frontend/*.p12
+/frontend/*.key
+/frontend/*.mobileprovision
+
+# Metro
+/frontend/.metro-health-check*
+
+# debug
+/frontend/npm-debug.*
+/frontend/yarn-debug.*
+/frontend/yarn-error.*
+
+# macOS
+/frontend/.DS_Store
+/frontend/*.pem
+
+# local env files
+/frontend/.env*.local
+/frontend/.env
+
+# typescript
+/frontend/*.tsbuildinfo
+
+/frontend/app-example
+/frontend/.vscode/
+
+# ===== BACKEND =====
+
+# Byte-compiled / optimized / DLL files
+/backend/__pycache__/
+/backend/*.py[cod]
+/backend/*$py.class
+
+# C extensions
+/backend/*.so
+
+# Packaging
+/backend/.Python
+/backend/build/
+/backend/develop-eggs/
+/backend/dist/
+/backend/downloads/
+/backend/eggs/
+/backend/.eggs/
+/backend/lib/
+/backend/lib64/
+/backend/parts/
+/backend/sdist/
+/backend/var/
+/backend/wheels/
+/backend/share/python-wheels/
+/backend/*.egg-info/
+/backend/.installed.cfg
+/backend/*.egg
+/backend/MANIFEST
+
+# PyInstaller
+/backend/*.manifest
+/backend/*.spec
+
+# Installer logs
+/backend/pip-log.txt
+/backend/pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+/backend/htmlcov/
+/backend/.tox/
+/backend/.nox/
+/backend/.coverage
+/backend/.coverage.*
+/backend/.cache
+/backend/nosetests.xml
+/backend/coverage.xml
+/backend/*.cover
+/backend/*.py,cover
+/backend/.hypothesis/
+/backend/.pytest_cache/
+/backend/cover/
+
+# Translations
+/backend/*.mo
+/backend/*.pot
+
+# Django stuff:
+/backend/*.log
+/backend/local_settings.py
+/backend/db.sqlite3
+/backend/db.sqlite3-journal
+
+# Flask stuff:
+/backend/instance/
+/backend/.webassets-cache
+
+# Scrapy
+/backend/.scrapy
+
+# Sphinx
+/backend/docs/_build/
+
+# PyBuilder
+/backend/.pybuilder/
+/backend/target/
+
+# Jupyter Notebook
+/backend/.ipynb_checkpoints
+
+# IPython
+/backend/profile_default/
+/backend/ipython_config.py
+
+# pipenv/poetry/pdm
+/backend/.pdm.toml
+/backend/.pdm-python
+/backend/.pdm-build/
+/backend/__pypackages__/
+
+# Environments
+/backend/.env
+/backend/.venv
+/backend/env/
+/backend/venv/
+/backend/ENV/
+/backend/env.bak/
+/backend/venv.bak/
+
+# IDE/editor stuff
+/backend/.spyderproject
+/backend/.spyproject
+/backend/.ropeproject
+
+# mypy/pyre/pytype
+/backend/.mypy_cache/
+/backend/.dmypy.json
+/backend/dmypy.json
+/backend/.pyre/
+/backend/.pytype/
+
+# Cython debug symbols
+/backend/cython_debug/
+
+# PyCharm / JetBrains
+#/backend/.idea/  <-- opcional
+
+# Ruff
+/backend/.ruff_cache/
+
+# PyPI config
+/backend/.pypirc
