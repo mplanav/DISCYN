@@ -3,11 +3,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy import or_, and_
 from app.database import get_async_session
-from app.models import GymbroDB, EntrenoDB
+from app.models import GymbroDB, EntrenoDB, ExerciciEntrenoDB
 from app.core import get_current_user
 from app.schemas import EntrenoOut as EntrenoSchema
 from sqlalchemy.orm import joinedload
-from app.models import UsuariDB, PersonaDB, RutinaDB, ExerciciRealitzatDB
+from app.models import UsuariDB, PersonaDB, RutinaDB
 
 get_gymbroTraining = APIRouter()
 
@@ -57,19 +57,19 @@ async def get_gymbros_trainings(
     if not rows:
         return {"message": "You're gymbros has not shared any trainings yet."}
 
-    # Ahora buscamos el primer ejercicio para cada rutina
-    rutina_ids = list(set([row[0].rutina_id for row in rows]))
+    # Ahora buscamos el primer ejercicio realizado para cada entreno
+    entreno_ids = [row[0].entreno_id for row in rows]
     ejercicios_result = await session.execute(
-        select(ExerciciRealitzatDB.rutina_id, ExerciciRealitzatDB.exercici_nom)
+        select(ExerciciEntrenoDB.entreno_id, ExerciciEntrenoDB.exercici_nom)
         .where(
             and_(
-                ExerciciRealitzatDB.rutina_id.in_(rutina_ids),
-                ExerciciRealitzatDB.ordre == 1
+                ExerciciEntrenoDB.entreno_id.in_(entreno_ids),
+                ExerciciEntrenoDB.ordre == 1
             )
         )
     )
     ejercicios = ejercicios_result.all()
-    # Map de rutina_id -> primer ejercicio
+    # Map de entreno_id -> primer ejercicio realizado
     primer_ejercicio_map = {r[0]: r[1] for r in ejercicios}
 
     # Construir lista con todos los datos
@@ -80,7 +80,7 @@ async def get_gymbros_trainings(
         ent_dict['usuari_foto'] = foto_url
         ent_dict['rutina_nom'] = rutina_nom
         ent_dict['rutina_id'] = rutina_id
-        ent_dict['primer_exercici'] = primer_ejercicio_map.get(rutina_id, None)
+        ent_dict['primer_exercici_realitzat'] = primer_ejercicio_map.get(entreno.entreno_id, None)
         trainings_with_names.append(ent_dict)
 
     return trainings_with_names

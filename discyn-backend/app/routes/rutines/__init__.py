@@ -1,1 +1,1 @@
-from . import get_frequent_rutines, create_rutines, get_visible_rutines
+from . import get_frequent_rutines, create_rutines, get_visible_rutines, delete_rutina, update_rutina

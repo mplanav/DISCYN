@@ -9,6 +9,7 @@ class RutinaDB(Base):
     nom = Column(String(50), nullable=False)
     admin_id = Column(Integer, ForeignKey("administrador.persona_id", ondelete="SET NULL", onupdate="CASCADE"), nullable=True)
     user_id = Column(Integer, ForeignKey("usuari.persona_id", ondelete="SET NULL", onupdate="CASCADE"), nullable=True)
+    tipo = Column(String(20), nullable=False)
 
     entrenos = relationship("EntrenoDB", back_populates="rutina")
 
@@ -16,5 +17,9 @@ class RutinaDB(Base):
         CheckConstraint(
             "(admin_id IS NOT NULL AND user_id IS NULL) OR (admin_id IS NULL AND user_id IS NOT NULL)",
             name="check_rutina_owner"
+        ),
+        CheckConstraint(
+            "tipo IN ('hipertrofia', 'rendiment', 'natació', 'calistenia', 'ciclisme', 'running', 'altres')",
+            name="check_rutina_tipo"
         ),
     )

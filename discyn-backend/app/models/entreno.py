@@ -11,7 +11,14 @@ class EntrenoDB(Base):
     duraciototal = Column(Time, nullable=False)
     sensacions = Column(Text)
     datahora = Column(DateTime, nullable=False)
+    recorregut = Column(Float)
 
     rutina = relationship("RutinaDB", back_populates="entrenos")
-
-
+    
+    # Relación con ejercicios realizados en este entreno
+    exercicis_entreno = relationship(
+        "ExerciciEntrenoDB",
+        back_populates="entreno",
+        cascade="all, delete-orphan",
+        passive_deletes=True
+    )

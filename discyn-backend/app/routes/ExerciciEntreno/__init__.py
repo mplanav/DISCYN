@@ -1,0 +1,1 @@
+from . import add_exercici_entreno, delete_exercici_entreno, update_exercici_entreno, list_exercici_entreno

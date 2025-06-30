@@ -11,12 +11,16 @@ create_rutina_router = APIRouter()
 async def create_rutina(
     nom: str = Form(...),
     exercicis: str = Form(...),
+    tipo: str = Form(...),
     id: int = Depends(get_current_user),
     session: AsyncSession = Depends(get_async_session)
 ):
     is_admin = await session.execute(select(AdministradorDB).where(AdministradorDB.persona_id == id))
     is_user = await session.execute(select(UsuariDB).where(UsuariDB.persona_id == id))
 
+    if tipo not in ('hipertrofia', 'rendiment', 'natació', 'calistenia', 'ciclisme', 'running', 'altres'):
+        raise HTTPException(status_code=400, detail="Tipo must be 'hipertrofia', 'rendiment', 'natació', 'calistenia', 'ciclisme', 'running', 'altres'")
+    
     admin = is_admin.scalar_one_or_none()
     user = is_user.scalar_one_or_none()
     if not admin and not user:
@@ -25,7 +29,8 @@ async def create_rutina(
     new_rutina = RutinaDB(
         nom=nom,
         admin_id=admin.persona_id if admin else None,
-        user_id=user.persona_id if user else None,        
+        user_id=user.persona_id if user else None,   
+        tipo=tipo     
     )
     session.add(new_rutina)
     await session.flush()

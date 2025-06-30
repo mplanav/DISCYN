@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy.orm import selectinload
@@ -6,49 +6,38 @@ from app.database import get_async_session
 from app.models import EntrenoDB
 from app.core import get_current_user
 
-get_entreno_router = APIRouter()
+list_entrenos_router = APIRouter()
 
-@get_entreno_router.get("/by-user/{entreno_id}")
-async def get_entreno(
-    entreno_id: int,
+@list_entrenos_router.get("/all-user")
+async def list_entrenos(
     session: AsyncSession = Depends(get_async_session),
     user_id: int = Depends(get_current_user)
 ):
-    # Obtener el entreno con su rutina y ejercicios
+    # Obtener todos los entrenos del usuario con sus rutinas y ejercicios
     result = await session.execute(
         select(EntrenoDB)
         .options(
             selectinload(EntrenoDB.rutina),
             selectinload(EntrenoDB.exercicis_entreno)
         )
-        .where(EntrenoDB.entreno_id == entreno_id)
+        .where(EntrenoDB.usuari_id == user_id)
+        .order_by(EntrenoDB.datahora.desc())
     )
-    entreno = result.scalar_one_or_none()
+    entrenos = result.scalars().all()
 
-    if not entreno:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Entreno no trobat"
-        )
+    # Formatear la respuesta
+    entrenos_list = []
+    for entreno in entrenos:
+        exercicis = [
+            {
+                "id": ex.id,
+                "ordre": ex.ordre,
+                "exercici_nom": ex.exercici_nom
+            }
+            for ex in sorted(entreno.exercicis_entreno, key=lambda e: e.ordre)
+        ]
 
-    if entreno.usuari_id != user_id:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="No tens permís per veure aquest entreno"
-        )
-
-    # Construir la respuesta con los ejercicios del entreno
-    exercicis = [
-        {
-            "id": ex.id,
-            "ordre": ex.ordre,
-            "exercici_nom": ex.exercici_nom
-        }
-        for ex in sorted(entreno.exercicis_entreno, key=lambda e: e.ordre)
-    ]
-
-    return {
-        "entreno": {
+        entrenos_list.append({
             "entreno_id": entreno.entreno_id,
             "rutina_id": entreno.rutina_id,
             "rutina_nom": entreno.rutina.nom if entreno.rutina else None,
@@ -59,5 +48,6 @@ async def get_entreno(
             "datahora": entreno.datahora.isoformat() if entreno.datahora else None,
             "recorregut": entreno.recorregut,
             "exercicis": exercicis
-        }
-    }
+        })
+
+    return {"entrenos": entrenos_list}

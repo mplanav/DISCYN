@@ -9,10 +9,7 @@ from .exercici import ExerciciDB
 from .exercici_grup_muscular import ExerciciGrupMuscularDB
 from .exercici_realitzat import ExerciciRealitzatDB
 from .entreno import EntrenoDB
-from .hipertrofia import HipertrofiaDB
-from .serie_classica import SerieClassicaDB
-from .rendiment import RendimentDB
-from .serie_rendiment import SerieRendimentDB
+from .exercici_entreno import ExerciciEntrenoDB
 
 __all__ = [
     "PersonaDB",
@@ -26,8 +23,5 @@ __all__ = [
     "ExerciciGrupMuscularDB",
     "ExerciciRealitzatDB",
     "EntrenoDB",
-    "HipertrofiaDB",
-    "SerieClassicaDB",
-    "RendimentDB",
-    "SerieRendimentDB",
+    "ExerciciEntrenoDB"
 ]

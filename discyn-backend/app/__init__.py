@@ -8,14 +8,15 @@ from fastapi.staticfiles import StaticFiles
 from app.routes.gymbro import add_gymbro, get_gymbro_trainings, get_gymbros, delete_gymbro
 from app.routes.persona import crud, auth
 from app.routes.grupmuscular import create_grupmuscular
-from app.routes.rutines import get_frequent_rutines, create_rutines, get_visible_rutines
+from app.routes.rutines import get_frequent_rutines, create_rutines, get_visible_rutines, delete_rutina, update_rutina
 from app.routes.exercicis import create_exercici
-from app.routes.entrenos import create_entreno, create_entreno_from_rutina, update_entreno_classic, update_entreno_rendiment, get_entreno
+from app.routes.entrenos import create_entreno, create_entreno_from_rutina, get_entreno, list_user_entrenos
 from app.routes.grupmuscular import create_grupmuscular,read_grupmuscular
 from app.routes.rutines import get_frequent_rutines, create_rutines, get_visible_rutines, read_rutines
 from app.routes.exercicis import create_exercici, read_exercici
-from app.routes.entrenos import create_entreno, create_entreno_from_rutina, read_entreno
+from app.routes.entrenos import create_entreno, create_entreno_from_rutina, read_entreno, update_entreno, delete_entreno, stats_entreno
 from app.routes.usuari import search_users
+from app.routes.ExerciciEntreno import add_exercici_entreno, delete_exercici_entreno, update_exercici_entreno, list_exercici_entreno
 import os
 
 @asynccontextmanager
@@ -68,6 +69,8 @@ app.include_router(read_grupmuscular.read_grupmuscular_router, prefix="/grupmusc
 
 #CRUD RUTINES
 app.include_router(create_rutines.create_rutina_router, prefix="/rutines", tags=["rutines"])
+app.include_router(delete_rutina.delete_rutina_router, prefix="/rutines", tags=["rutines"])
+app.include_router(update_rutina.update_rutina_router, prefix="/rutines", tags=["rutines"])
 
 #RUTINES ROUTES
 app.include_router(get_frequent_rutines.frequent_rutines_router, prefix="/rutines", tags=["rutines"])
@@ -80,10 +83,18 @@ app.include_router(read_exercici.read_exercici_router, prefix="/exercicis", tags
 #CRUD ENTRENOS
 app.include_router(create_entreno.create_entreno_router, prefix="/entrenos", tags=["entrenos"])
 app.include_router(create_entreno_from_rutina.create_entreno_from_rutina_router, prefix="/entrenos", tags=["entrenos"])
-app.include_router(update_entreno_classic.update_entreno_classic_router, prefix="/entrenos", tags=["entrenos"])
-app.include_router(update_entreno_rendiment.update_entreno_rendiment_router, prefix="/entrenos", tags=["entrenos"])
 app.include_router(get_entreno.get_entreno_router, prefix="/entrenos", tags=["entrenos"])
 app.include_router(read_entreno.read_entreno_router, prefix="/entrenos", tags=["entrenos"])
+app.include_router(list_user_entrenos.list_entrenos_router, prefix="/entrenos", tags=["entrenos"])
+app.include_router(update_entreno.update_entreno_router, prefix="/entrenos", tags=["entrenos"])
+app.include_router(delete_entreno.delete_entreno_router, prefix="/entrenos", tags=["entrenos"])
+app.include_router(stats_entreno.stats_router, prefix="/entrenos", tags=["entrenos"])
 
+#EXERCICIS ENTRENOS
+app.include_router(add_exercici_entreno.add_exercise_router, prefix="/exercicientreno", tags=["exercicientreno"])
+app.include_router(delete_exercici_entreno.delete_exercise_router, prefix="/exercicientreno", tags=["exercicientreno"])
+app.include_router(update_exercici_entreno.edit_exercise_router, prefix="/exercicientreno", tags=["exercicientreno"])
+app.include_router(list_exercici_entreno.list_exercises_router, prefix="/exercicientreno", tags=["exercicientreno"])
 #USUARIS
 app.include_router(search_users.search_users_router, prefix="/usuaris", tags=["usuaris"])
+

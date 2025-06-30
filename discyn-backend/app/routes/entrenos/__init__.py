@@ -1,1 +1,1 @@
-from . import create_entreno, create_entreno_from_rutina, read_entreno, update_entreno_classic, update_entreno_rendiment, get_entreno
+from . import create_entreno, create_entreno_from_rutina, read_entreno, get_entreno, list_user_entrenos, update_entreno, delete_entreno,stats_entreno

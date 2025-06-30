@@ -8,8 +8,9 @@ from app.core import get_current_user
 
 read_entreno_router = APIRouter()
 
-@read_entreno_router.get("/get-top-user")
+@read_entreno_router.get("/deprecated")
 async def get_top_user(
+    entreno_id: int,
     session: AsyncSession = Depends(get_async_session),
     id: int = Depends(get_current_user)
 ):
@@ -19,3 +20,5 @@ async def get_top_user(
     if not top_exercicis:
         raise HTTPException(status_code=404, detail="There are no entrenos done by you")
     return top_exercicis
+
+#VALORAR CARGARSELO
