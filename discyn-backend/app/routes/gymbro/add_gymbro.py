@@ -17,33 +17,62 @@ async def add_gymbro(
 ):
     usuari2_id = data.usuari2_id
     if usuari1_id == usuari2_id:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="You cannot add yourself as a gymbro.")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="You cannot add yourself as a gymbro."
+        )
     
-    result1 = await session.execute(select(UsuariDB).where(UsuariDB.persona_id == usuari1_id))
+    # Verificar que existen ambos usuarios
+    result1 = await session.execute(
+        select(UsuariDB).where(UsuariDB.persona_id == usuari1_id)
+    )
     usuari1 = result1.scalar_one_or_none()
     if not usuari1:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="The user with the provided ID does not exist.")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="The user with the provided ID does not exist."
+        )
 
-    result2 = await session.execute(select(UsuariDB).where(UsuariDB.persona_id == usuari2_id))
+    result2 = await session.execute(
+        select(UsuariDB).where(UsuariDB.persona_id == usuari2_id)
+    )
     usuari2 = result2.scalar_one_or_none()
     if not usuari2:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"User with ID {usuari2_id} does not exist.")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"User with ID {usuari2_id} does not exist."
+        )
     
+    # Ordenar los IDs (por el check constraint de la tabla)
     u1, u2 = sorted([usuari1_id, usuari2_id])
 
+    # Verificar si ya existe alguna relación
     exist_gymbro = await session.execute(
-        select(GymbroDB).where(and_(GymbroDB.usuari1_id == u1, GymbroDB.usuari2_id == u2))
+        select(GymbroDB).where(
+            and_(
+                GymbroDB.usuari1_id == u1,
+                GymbroDB.usuari2_id == u2
+            )
+        )
     )
     if exist_gymbro.scalar_one_or_none():
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="You and this user are already gymbros.")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="You and this user already have a pending or accepted gymbro request."
+        )
     
-    new_gymbro = GymbroDB(usuari1_id=u1, usuari2_id=u2)
+    # Crear nueva solicitud con estado "pending"
+    new_gymbro = GymbroDB(
+        usuari1_id=u1,
+        usuari2_id=u2,
+        status="pending"
+    )
     session.add(new_gymbro)
 
     try:
         await session.commit()
     except Exception as e:
         await session.rollback()
-        raise HTTPException(status_code=500, detail=f"Error intern: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Internal error: {str(e)}")
 
-    return {"message": "Congrats, you have a new gymbro!"}
+    return {"message": "Friend request sent successfully (pending approval)."}

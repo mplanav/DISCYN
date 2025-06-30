@@ -10,6 +10,7 @@ from .exercici_grup_muscular import ExerciciGrupMuscularDB
 from .exercici_realitzat import ExerciciRealitzatDB
 from .entreno import EntrenoDB
 from .exercici_entreno import ExerciciEntrenoDB
+from .progres_usuari import ProgresCorporalDB
 
 __all__ = [
     "PersonaDB",
@@ -23,5 +24,6 @@ __all__ = [
     "ExerciciGrupMuscularDB",
     "ExerciciRealitzatDB",
     "EntrenoDB",
-    "ExerciciEntrenoDB"
+    "ExerciciEntrenoDB",
+    "ProgresCorporalDB"
 ]

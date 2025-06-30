@@ -7,6 +7,6 @@ class UsuariDB(Base):
 
     persona_id = Column(Integer, ForeignKey("persona.id", ondelete="CASCADE", onupdate="CASCADE"), primary_key=True)
     altura = Column(Float, nullable=True)
-    pes = Column(Float, nullable=True)
 
     persona = relationship("PersonaDB", back_populates="usuari")
+    progres_corporal = relationship("ProgresCorporalDB", back_populates="usuari", cascade="all, delete-orphan")

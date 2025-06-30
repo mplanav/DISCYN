@@ -1,4 +1,6 @@
-from fastapi import APIRouter, Depends, HTTPException
+from typing import Optional
+from datetime import datetime
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy.orm import selectinload
@@ -11,21 +13,27 @@ list_entrenos_router = APIRouter()
 @list_entrenos_router.get("/all-user")
 async def list_entrenos(
     session: AsyncSession = Depends(get_async_session),
-    user_id: int = Depends(get_current_user)
+    user_id: int = Depends(get_current_user),
+    fecha_desde: Optional[datetime] = Query(None, description="Fecha desde (inclusive)"),
+    fecha_hasta: Optional[datetime] = Query(None, description="Fecha hasta (inclusive)"),
+    limit: int = Query(20, ge=1, le=100, description="Número máximo de entrenos a devolver"),
+    offset: int = Query(0, ge=0, description="Número de entrenos a saltar")
 ):
-    # Obtener todos los entrenos del usuario con sus rutinas y ejercicios
-    result = await session.execute(
-        select(EntrenoDB)
-        .options(
-            selectinload(EntrenoDB.rutina),
-            selectinload(EntrenoDB.exercicis_entreno)
-        )
-        .where(EntrenoDB.usuari_id == user_id)
-        .order_by(EntrenoDB.datahora.desc())
-    )
+    query = select(EntrenoDB).options(
+        selectinload(EntrenoDB.rutina),
+        selectinload(EntrenoDB.exercicis_entreno)
+    ).where(EntrenoDB.usuari_id == user_id)
+    
+    if fecha_desde:
+        query = query.where(EntrenoDB.datahora >= fecha_desde)
+    if fecha_hasta:
+        query = query.where(EntrenoDB.datahora <= fecha_hasta)
+
+    query = query.order_by(EntrenoDB.datahora.desc()).limit(limit).offset(offset)
+
+    result = await session.execute(query)
     entrenos = result.scalars().all()
 
-    # Formatear la respuesta
     entrenos_list = []
     for entreno in entrenos:
         exercicis = [
