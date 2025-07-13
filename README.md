@@ -110,13 +110,4 @@
 - [ ] Mejoras de diseño e interacción social
 
 ---
-
-## 🤝 Contribuciones
-
-¿Tienes ideas o sugerencias? ¡Son bienvenidas! Puedes hacer un fork del repositorio, trabajar en tu propuesta y abrir un Pull Request.
-
----
-
-## 📄 Licencia
-
-Este proyecto está bajo la licencia MIT. Consulta el archivo [`LICENSE`](./LICENSE) para más información.
+Contributors: Pau Martin Nadal
